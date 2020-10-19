@@ -50,6 +50,7 @@ public class Tokenizer {
         {   
             char next = it.nextChar();
             s = s + next;
+            peek = it.peekChar();
         }
         // 解析存储的字符串为无符号整数
         // 解析成功则返回无符号整数类型的token，否则返回编译错误
@@ -70,6 +71,7 @@ public class Tokenizer {
         {   
             char next = it.nextChar();
             s = s + next;
+            peek = it.peekChar();
         }
         // 尝试将存储的字符串解释为关键字
         // -- 如果是关键字，则返回关键字类型的 token
