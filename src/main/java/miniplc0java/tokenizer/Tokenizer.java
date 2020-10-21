@@ -76,23 +76,23 @@ public class Tokenizer {
         // 尝试将存储的字符串解释为关键字
         // -- 如果是关键字，则返回关键字类型的 token
         // -- 否则，返回标识符
-        if(s.equals("BEGIN")==true)
+        if(s.equals("begin")==true)
         {
             return new Token(TokenType.Begin,s,pos,it.currentPos());
         }
-        else if(s.equals("END")==true)
+        else if(s.equals("end")==true)
         {
             return new Token(TokenType.End,s,pos,it.currentPos());
         }
-        else if(s.equals("VAR")==true)
+        else if(s.equals("var")==true)
         {
             return new Token(TokenType.Var,s,pos,it.currentPos());
         }
-        else if(s.equals("CONST")==true)
+        else if(s.equals("const")==true)
         {
             return new Token(TokenType.Const,s,pos,it.currentPos());
         }
-        else if(s.equals("PRINT")==true)
+        else if(s.equals("print")==true)
         {
             return new Token(TokenType.Print,s,pos,it.currentPos());
         }
