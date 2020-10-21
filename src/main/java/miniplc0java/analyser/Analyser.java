@@ -203,7 +203,9 @@ public final class Analyser {
     }
 
     private void analyseMain() throws CompileError {
-        throw new Error("Not implemented");
+        analyseConstantDeclaration();
+        analyseVariableDeclaration();
+        analyseStatementSequence();
     }
 
     private void analyseConstantDeclaration() throws CompileError {
@@ -213,6 +215,9 @@ public final class Analyser {
             // 变量名
             var nameToken = expect(TokenType.Ident);
 
+            instructions.add(new Instruction(Operation.LIT,0));
+            addSymbol(nameToken.getValueString(), false, true, (nameToken.getStartPos()));
+
             // 等于号
             expect(TokenType.Equal);
 
@@ -221,31 +226,117 @@ public final class Analyser {
 
             // 分号
             expect(TokenType.Semicolon);
+
+            declareSymbol(nameToken.getValueString(),nameToken.getStartPos());
+
+            Integer a = getOffset(nameToken.getValueString(),nameToken.getStartPos());
+
+            instructions.add(new Instruction(Operation.STO,a));
         }
     }
 
     private void analyseVariableDeclaration() throws CompileError {
-        throw new Error("Not implemented");
+        while (nextIf(TokenType.Var) != null) {
+            // 变量名
+            var nameToken = expect(TokenType.Ident);
+
+            instructions.add(new Instruction(Operation.LIT,0));
+            addSymbol(nameToken.getValueString(), false, false, (nameToken.getStartPos()));
+
+            if(check(TokenType.Equal))
+            {
+                // 等于号
+                expect(TokenType.Equal);
+
+                // 常表达式
+                analyseConstantExpression();
+
+                declareSymbol(nameToken.getValueString(),nameToken.getStartPos());
+
+                Integer a = getOffset(nameToken.getValueString(),nameToken.getStartPos());
+
+                instructions.add(new Instruction(Operation.STO,a));
+            }
+
+            // 分号
+            expect(TokenType.Semicolon);
+        }
     }
 
     private void analyseStatementSequence() throws CompileError {
-        throw new Error("Not implemented");
+        while(check(TokenType.Print) || check(TokenType.Ident) || check(TokenType.Semicolon))
+        {
+            analyseStatement();
+        }
     }
 
     private void analyseStatement() throws CompileError {
-        throw new Error("Not implemented");
+        if(check(TokenType.Print))
+        {
+            analyseOutputStatement();
+        }
+        else if(check(TokenType.Ident))
+        {
+            analyseAssignmentStatement();
+        }
+        else if(check(TokenType.Semicolon))
+        {
+            expect(TokenType.Semicolon);
+        }
     }
 
     private void analyseConstantExpression() throws CompileError {
-        throw new Error("Not implemented");
+        boolean negate;
+        if (nextIf(TokenType.Minus) != null) {
+            negate = true;
+        } else {
+            nextIf(TokenType.Plus);
+            negate = false;
+        }
+        Token int_token = expect(TokenType.Uint);
+
+        Integer a = int_token.getValue();
+
+        if(negate)
+        {
+            a=-a;
+        }
+
+        instructions.add(new Instruction(Operation.LIT,a));
     }
 
     private void analyseExpression() throws CompileError {
-        throw new Error("Not implemented");
+
+        analyseItem();
+
+        while(nextIf(TokenType.Plus) != null)
+        {
+            analyseItem();
+
+            instructions.add(new Instruction(Operation.ADD));
+        }
+
     }
 
     private void analyseAssignmentStatement() throws CompileError {
-        throw new Error("Not implemented");
+
+        var nameToken = expect(TokenType.Ident);
+
+        // 等于号
+        expect(TokenType.Equal);
+
+        // 表达式
+        analyseExpression();
+
+        // 分号
+        expect(TokenType.Semicolon);
+
+        declareSymbol(nameToken.getValueString(),nameToken.getStartPos());
+
+        Integer a = getOffset(nameToken.getValueString(),nameToken.getStartPos());
+
+        instructions.add(new Instruction(Operation.STO,a));
+
     }
 
     private void analyseOutputStatement() throws CompileError {
@@ -258,7 +349,15 @@ public final class Analyser {
     }
 
     private void analyseItem() throws CompileError {
-        throw new Error("Not implemented");
+
+        analyseFactor();
+
+        while(nextIf(TokenType.Mult) != null)
+        {
+            analyseFactor();
+
+            instructions.add(new Instruction(Operation.MUL));
+        }
     }
 
     private void analyseFactor() throws CompileError {
@@ -272,13 +371,33 @@ public final class Analyser {
             negate = false;
         }
 
-        if (check(TokenType.Ident)) {
+        if (check(TokenType.Ident)) 
+        {
             // 调用相应的处理函数
-        } else if (check(TokenType.Uint)) {
+            Token ident_token = expect(TokenType.Ident);
+
+            Integer offset = getOffset(ident_token().getValue(),ident_token.getStartPos());
+
+            instructions.add(new Instruction(Operation.LOD,offset));
+        } 
+        else if (check(TokenType.Uint)) 
+        {
             // 调用相应的处理函数
-        } else if (check(TokenType.LParen)) {
+            Token int_token = expect(TokenType.Uint);
+
+            int a = int_token.getValue();
+
+            instructions.add(new Instruction(Operation.LIT,a));
+        } 
+        else if (check(TokenType.LParen)) 
+        {
             // 调用相应的处理函数
-        } else {
+            analyseFactor();
+
+            expect(TokenType.RParen);
+        } 
+        else 
+        {
             // 都不是，摸了
             throw new ExpectedTokenError(List.of(TokenType.Ident, TokenType.Uint, TokenType.LParen), next());
         }
@@ -286,6 +405,5 @@ public final class Analyser {
         if (negate) {
             instructions.add(new Instruction(Operation.SUB));
         }
-        throw new Error("Not implemented");
     }
 }
