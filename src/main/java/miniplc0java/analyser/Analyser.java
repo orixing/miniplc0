@@ -312,11 +312,26 @@ public final class Analyser {
 
         analyseItem();
 
-        while(nextIf(TokenType.Plus) != null)
+        while(check(TokenType.Plus) || check(TokenType.Minus))
         {
-            analyseItem();
+            if(check(TokenType.Plus))
+            {
+                expect(TokenType.Plus);
 
-            instructions.add(new Instruction(Operation.ADD));
+                analyseItem();
+
+                instructions.add(new Instruction(Operation.ADD));
+            }
+            else
+            {
+                expect(TokenType.Minus);
+
+                analyseItem();
+
+                instructions.add(new Instruction(Operation.SUB));
+            }
+
+            
         }
 
     }
@@ -355,11 +370,26 @@ public final class Analyser {
 
         analyseFactor();
 
-        while(nextIf(TokenType.Mult) != null)
+        while(check(TokenType.Mult)||check(TokenType.Div))
         {
-            analyseFactor();
+            if(check(TokenType.Mult))
+            {
+                expect(TokenType.Mult);
 
-            instructions.add(new Instruction(Operation.MUL));
+                analyseFactor();
+
+                instructions.add(new Instruction(Operation.MUL));
+            }
+            else
+            {
+                expect(TokenType.Div);
+
+                analyseFactor();
+
+                instructions.add(new Instruction(Operation.DIV));
+            }
+
+            
         }
     }
 
