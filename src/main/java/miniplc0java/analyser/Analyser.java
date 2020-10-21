@@ -289,6 +289,8 @@ public final class Analyser {
         boolean negate;
         if (nextIf(TokenType.Minus) != null) {
             negate = true;
+            // 计算结果需要被 0 减
+            instructions.add(new Instruction(Operation.LIT, 0));
         } else {
             nextIf(TokenType.Plus);
             negate = false;
@@ -297,12 +299,13 @@ public final class Analyser {
 
         Integer a = Integer.valueOf(int_token.getValueString());
 
+        instructions.add(new Instruction(Operation.LIT, a));
+
         if(negate)
         {
-            a=-a;
+            instructions.add(new Instruction(Operation.SUB));
         }
 
-        instructions.add(new Instruction(Operation.LIT,a));
     }
 
     private void analyseExpression() throws CompileError {
