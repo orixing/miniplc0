@@ -295,7 +295,7 @@ public final class Analyser {
         }
         Token int_token = expect(TokenType.Uint);
 
-        Integer a = int_token.getValue();
+        Integer a = Integer.valueOf(int_token.getValueString());
 
         if(negate)
         {
@@ -376,7 +376,7 @@ public final class Analyser {
             // 调用相应的处理函数
             Token ident_token = expect(TokenType.Ident);
 
-            Integer offset = getOffset(ident_token().getValue(),ident_token.getStartPos());
+            Integer offset = getOffset(ident_token.getValueString(),ident_token.getStartPos());
 
             instructions.add(new Instruction(Operation.LOD,offset));
         } 
@@ -385,7 +385,7 @@ public final class Analyser {
             // 调用相应的处理函数
             Token int_token = expect(TokenType.Uint);
 
-            int a = int_token.getValue();
+            int a = Integer.valueOf(int_token.getValueString());
 
             instructions.add(new Instruction(Operation.LIT,a));
         } 
