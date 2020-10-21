@@ -392,7 +392,7 @@ public final class Analyser {
         else if (check(TokenType.LParen)) 
         {
             // 调用相应的处理函数
-            analyseFactor();
+            analyseExpression();
 
             expect(TokenType.RParen);
         } 
