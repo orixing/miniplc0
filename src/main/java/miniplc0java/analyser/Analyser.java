@@ -248,8 +248,8 @@ public final class Analyser {
                 // 等于号
                 expect(TokenType.Equal);
 
-                // 常表达式
-                analyseConstantExpression();
+                // 表达式
+                analyseExpression();
 
                 declareSymbol(nameToken.getValueString(),nameToken.getStartPos());
 
