@@ -391,6 +391,8 @@ public final class Analyser {
         } 
         else if (check(TokenType.LParen)) 
         {
+            expect(TokenType.LParen);
+
             // 调用相应的处理函数
             analyseExpression();
 
